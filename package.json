@@ -1,0 +1,10 @@
+{
+  "name": "kyusyu-travel-scheduler",
+  "version": "1.0.0",
+  "description": "🚰🚰🚰 九州旅行中のスケジュールを管理するためのアプリケーションです！",
+  "main": "./src/index.ts",
+  "repository": "https://github.com/osawa-koki/kyusyu-travel-scheduler.git",
+  "author": "osawa-koki <koki@osawa.dev>",
+  "license": "Apache-2.0",
+  "private": false
+}
