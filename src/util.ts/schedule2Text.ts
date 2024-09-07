@@ -16,6 +16,13 @@ export default function schedule2Text(schedule) {
   const isSameDay = startYmd === endYmd
   const start = `${startYmdText} ${startHourText}:${startMinuteText}`
   const end = `${isSameDay ? '' : `${endYmdText} `}${endHourText}:${endMinuteText}`
-  const title = schedule.properties["名前"].title[0].text.content
-  return `📅 ${start} - ${end}\n${title}`
+  const title = schedule.properties["名前"].title[0]?.text?.content ?? '<タイトル未設定>'
+  const place = schedule.properties["場所"].rich_text[0]?.text?.content ?? '<場所未設定>'
+
+  const header = `📅 ${start} - ${end}`
+  let body = ''
+  body += `\t\t├ ${title}`
+  body += '\n'
+  body += `\t\t└ ${place}`
+  return `${header}\n${body}`
 }
