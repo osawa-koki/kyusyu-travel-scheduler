@@ -1,4 +1,5 @@
 import { Istest } from './@types/IsTest'
+import schedule2Text from './util.ts/schedule2Text'
 
 const mockEventPostData: GoogleAppsScript.Events.DoPost = {
   postData: {
@@ -57,6 +58,26 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
     Logger.log(JSON.stringify(properties, null, 2))
   })
 
+  const now = new Date()
+  const datetimeThreshold = new Date(now.getTime() - 60 * 60 * 1000)
+
+  const existingSchedules = results.filter((record) => {
+    const properties = record.properties
+    const startDatetime = new Date(properties["日付"].date.start)
+    return startDatetime > datetimeThreshold
+  })
+
+  const sortedSchedules = existingSchedules.sort((a, b) => {
+    const startDatetimeA = new Date(a.properties["日付"].date.start)
+    const startDatetimeB = new Date(b.properties["日付"].date.start)
+    return startDatetimeA.getTime() - startDatetimeB.getTime()
+  })
+
+  const slicedSchedules = sortedSchedules.slice(0, 5)
+
+  const message = slicedSchedules.map((schedule) => schedule2Text(schedule)).join("\n\n\n")
+
+  Logger.log(message)
 
   return out.setContent(JSON.stringify({ isProd, properties }))
 }
