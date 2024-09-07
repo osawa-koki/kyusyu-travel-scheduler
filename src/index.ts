@@ -1,5 +1,6 @@
 import { Istest } from './@types/IsTest'
 import schedule2Text from './util.ts/schedule2Text'
+import sendSlackMessage from './util.ts/sendSlackMessage'
 
 const mockEventPostData: GoogleAppsScript.Events.DoPost = {
   postData: {
@@ -24,11 +25,31 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
   const e = _e ?? mockEventPostData
   const isProd = e.isTest !== true
 
+  const body = JSON.parse(e.postData.contents)
+
+  if (body.type === 'url_verification') {
+    const { token: givenToken, challenge: givenChallenge } = body
+
+    const setToken = properties.getProperty('SLACK_VERIFICATION_TOKEN')
+    if (givenToken !== setToken) {
+      out.setContent(JSON.stringify({
+        message: 'Invalid token'
+      }))
+      return out
+    }
+
+    out.setContent(JSON.stringify({
+      message: 'Verification',
+      challenge: givenChallenge
+    }))
+    return out
+  }
+
 
   const notionSecret = properties.getProperty("NOTION_SECRET")!
   const notionDatabaseId = properties.getProperty("NOTION_DATABASE_ID")!
 
-  const url = `https://api.notion.com/v1/databases/${notionDatabaseId}/query`
+  const notionApiEndpoint = `https://api.notion.com/v1/databases/${notionDatabaseId}/query`
 
   const headers = {
     "Authorization": `Bearer ${notionSecret}`,
@@ -42,7 +63,7 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
     "muteHttpExceptions": true
   }
 
-  const response = UrlFetchApp.fetch(url, options)
+  const response = UrlFetchApp.fetch(notionApiEndpoint, options)
 
   const statusCode = response.getResponseCode()
   if (statusCode !== 200) {
@@ -78,6 +99,13 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
   const message = slicedSchedules.map((schedule) => schedule2Text(schedule)).join("\n\n\n")
 
   Logger.log(message)
+
+  const slackIncomingWebhookUrl = properties.getProperty("SLACK_INCOMING_WEBHOOK_URL")!
+
+  if (isProd) {
+    const response = sendSlackMessage(slackIncomingWebhookUrl, message)
+    Logger.log(response.getContentText())
+  }
 
   return out.setContent(JSON.stringify({ isProd, properties }))
 }
