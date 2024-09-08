@@ -1,5 +1,7 @@
 export default function schedule2Text({ schedule, notionUsernameSlackIconMapper }) {
   const emoji = schedule.icon.emoji
+  const notionUrl = schedule.url
+
   const startDatetime = new Date(schedule.properties["日付"].date.start)
   const endDatetime = new Date(schedule.properties["日付"].date.end)
   const startYmd = `${startDatetime.getFullYear()}-${(startDatetime.getMonth() + 1).toString().padStart(2, "0")}-${startDatetime.getDate().toString().padStart(2, "0")}`
@@ -37,6 +39,8 @@ export default function schedule2Text({ schedule, notionUsernameSlackIconMapper 
   body += '\n'
   body += `\t\t├ ${asineesText}`
   body += '\n'
-  body += `\t\t└ ${place}`
+  body += `\t\t├ ${place}`
+  body += '\n'
+  body += `\t\t└ ${notionUrl}`
   return `${header}\n${body}`
 }
