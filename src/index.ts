@@ -76,7 +76,7 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
   const results = jsonResponse.results
   results.forEach((record) => {
     const properties = record.properties
-    Logger.log(JSON.stringify(properties, null, 2))
+    // Logger.log(JSON.stringify(properties, null, 2))
   })
 
   const now = new Date()
@@ -96,7 +96,9 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
 
   const slicedSchedules = sortedSchedules.slice(0, 5)
 
-  const message = slicedSchedules.map((schedule) => schedule2Text(schedule)).join("\n\n\n")
+  const message = slicedSchedules.map((schedule) => {
+    return schedule2Text({ schedule })
+  }).join("\n")
 
   Logger.log(message)
 
