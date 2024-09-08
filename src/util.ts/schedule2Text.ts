@@ -17,6 +17,10 @@ export default function schedule2Text({ schedule, notionUsernameSlackIconMapper 
   const isSameDay = startYmd === endYmd
   const start = `${startYmdText} ${startHourText}:${startMinuteText}`
   const end = `${isSameDay ? '' : `${endYmdText} `}${endHourText}:${endMinuteText}`
+
+  const diffHour = (endDatetime.getTime() - startDatetime.getTime()) / 1000 / 60 / 60
+  const diffHourText = diffHour.toFixed(1)
+
   const title = schedule.properties["名前"].title[0]?.text?.content ?? '<タイトル未設定>'
   const place = schedule.properties["場所"].rich_text[0]?.text?.content ?? '<場所未設定>'
 
@@ -27,7 +31,7 @@ export default function schedule2Text({ schedule, notionUsernameSlackIconMapper 
     .sort()
   const asineesText = asignees.length > 0 ? asigneeIcons.join(' ') : '<担当者未設定>'
 
-  const header = `📅 ${start} - ${end}`
+  const header = `📅 ${start} - ${end} | ${diffHourText}h`
   let body = ''
   body += `\t\t├ ${emoji} ${title}`
   body += '\n'
