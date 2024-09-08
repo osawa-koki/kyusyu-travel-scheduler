@@ -100,7 +100,7 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
 
   const messageHeader = `🎈🎈🎈 Kyusyu-Travel 🎈🎈🎈`
   const messageBody = slicedSchedules.map((schedule) => {
-    return schedule2Text({ schedule, notionUsernameSlackIconMapper })
+    return schedule2Text({ schedule, notionSecret, notionUsernameSlackIconMapper })
   }).join("\n")
   const messageFooter = `===== ===== ===== ===== =====`
 

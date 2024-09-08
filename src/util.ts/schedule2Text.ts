@@ -1,4 +1,6 @@
-export default function schedule2Text({ schedule, notionUsernameSlackIconMapper }) {
+import notionBlock2Markdown from "./notionBlock2Markdown"
+
+export default function schedule2Text({ schedule, notionSecret, notionUsernameSlackIconMapper }) {
   const emoji = schedule.icon.emoji
   const notionUrl = schedule.url
 
@@ -33,6 +35,9 @@ export default function schedule2Text({ schedule, notionUsernameSlackIconMapper 
     .sort()
   const asineesText = asignees.length > 0 ? asigneeIcons.join(' ') : '<担当者未設定>'
 
+  const content = notionBlock2Markdown({ notionSecret, blockId: schedule.id })
+  const contentText = content.split('\n').map((line) => line.trim() === '' ? null : `\t\t\t\t├ ${line}`).filter((l) => l !== null).join('\n')
+
   const header = `📅 ${start} - ${end} | ${diffHourText}h`
   let body = ''
   body += `\t\t├ ${emoji} ${title}`
@@ -42,5 +47,11 @@ export default function schedule2Text({ schedule, notionUsernameSlackIconMapper 
   body += `\t\t├ ${place}`
   body += '\n'
   body += `\t\t└ ${notionUrl}`
+  body += '\n'
+  body += '\t\t\t\t├ ⭐️ 予定詳細 ----- ----- -----'
+  body += '\n'
+  body += contentText.trim() !== '' ? contentText : '\t\t\t\t├ <予定詳細未設定>'
+  body += '\n'
+  body += '\t\t\t\t└ ----- ----- ----- ----- ----- -----'
   return `${header}\n${body}`
 }
