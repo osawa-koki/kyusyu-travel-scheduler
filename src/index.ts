@@ -90,8 +90,8 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
     return startDatetimeA.getTime() - startDatetimeB.getTime()
   })
 
-  const commands = body.event.text.split(' ')
-  const givenNumber = commands.length >= 2 ? parseInt(commands[1]) : NaN
+  const commands = body.event?.text?.split(' ')
+  const givenNumber = (commands?.length ?? 0) >= 2 ? parseInt(commands[1]) : NaN
   const slicingCount = isNaN(givenNumber) ? 5 : givenNumber === 0 ? sortedSchedules.length : givenNumber
 
   const slicedSchedules = sortedSchedules.slice(0, slicingCount)
@@ -114,9 +114,20 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
 
   const slackIncomingWebhookUrl = properties.getProperty("SLACK_INCOMING_WEBHOOK_URL")!
 
-  if (isProd) {
+  let canSend = true
+  const lastSlackSentAt = properties.getProperty("LAST_SLACK_SENT_AT")
+  if (lastSlackSentAt != null) {
+    const lastSentAt = new Date(lastSlackSentAt)
+    const diff = now.getTime() - lastSentAt.getTime()
+    if (diff < 60 * 1000) {
+      canSend = false
+    }
+  }
+
+  if (isProd && canSend) {
     const response = sendSlackMessage(slackIncomingWebhookUrl, message)
     Logger.log(response.getContentText())
+    properties.setProperty("LAST_SLACK_SENT_AT", now.toISOString())
   }
 
   return out.setContent(JSON.stringify({ isProd, properties }))
