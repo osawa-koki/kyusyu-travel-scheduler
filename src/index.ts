@@ -74,10 +74,6 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
   const jsonResponse = JSON.parse(response.getContentText())
 
   const results = jsonResponse.results
-  results.forEach((record) => {
-    const properties = record.properties
-    // Logger.log(JSON.stringify(properties, null, 2))
-  })
 
   const now = new Date()
   const datetimeThreshold = new Date(now.getTime() - 60 * 60 * 1000)
@@ -96,9 +92,19 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
 
   const slicedSchedules = sortedSchedules.slice(0, 5)
 
-  const message = slicedSchedules.map((schedule) => {
-    return schedule2Text({ schedule })
+  slicedSchedules.forEach((schedule) => {
+    Logger.log(JSON.stringify(schedule, null, 2))
+  })
+
+  const { notionUsernameSlackIconMapper } = JSON.parse(properties.getProperty("NOTION_USERNAME_SLACK_ICON_MAPPER")!)
+
+  const messageHeader = `🎈🎈🎈 Kyusyu-Travel 🎈🎈🎈`
+  const messageBody = slicedSchedules.map((schedule) => {
+    return schedule2Text({ schedule, notionUsernameSlackIconMapper })
   }).join("\n")
+  const messageFooter = `===== ===== ===== ===== =====`
+
+  const message = [messageHeader, '', messageBody, '', messageFooter].join("\n")
 
   Logger.log(message)
 
