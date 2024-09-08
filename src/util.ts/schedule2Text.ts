@@ -30,6 +30,8 @@ export default function schedule2Text({ schedule, notionUsernameSlackIconMapper 
   let body = ''
   body += `\t\t├ ${emoji} ${title}`
   body += '\n'
+  body += `\t\t├ ${asineesText}`
+  body += '\n'
   body += `\t\t└ ${place}`
   return `${header}\n${body}`
 }
