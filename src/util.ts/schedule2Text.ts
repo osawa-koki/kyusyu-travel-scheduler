@@ -1,4 +1,4 @@
-export default function schedule2Text(schedule) {
+export default function schedule2Text({ schedule, notionUsernameSlackIconMapper }) {
   const startDatetime = new Date(schedule.properties["日付"].date.start)
   const endDatetime = new Date(schedule.properties["日付"].date.end)
   const startYmd = `${startDatetime.getFullYear()}-${(startDatetime.getMonth() + 1).toString().padStart(2, "0")}-${startDatetime.getDate().toString().padStart(2, "0")}`
@@ -19,9 +19,17 @@ export default function schedule2Text(schedule) {
   const title = schedule.properties["名前"].title[0]?.text?.content ?? '<タイトル未設定>'
   const place = schedule.properties["場所"].rich_text[0]?.text?.content ?? '<場所未設定>'
 
+  const asignees = schedule.properties["担当者"].people.map((person) => person.name)
+  const asigneeIcons = asignees.map(
+    (asignee) =>
+      `:${notionUsernameSlackIconMapper.find((mapper) => mapper.notionUsername === asignee)?.slackIcon ?? 'question'}:`)
+  const asineesText = asignees.length > 0 ? asigneeIcons.join(' ') : '<担当者未設定>'
+
   const header = `📅 ${start} - ${end}`
   let body = ''
   body += `\t\t├ ${title}`
+  body += '\n'
+  body += `\t\t├ ${asineesText}`
   body += '\n'
   body += `\t\t└ ${place}`
   return `${header}\n${body}`

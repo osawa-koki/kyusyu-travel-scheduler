@@ -1,0 +1,16 @@
+{
+  "notionUsernameSlackIconMapper": [
+    {
+      "notionUsername": "username1",
+      "slackIcon": "icon1"
+    },
+    {
+      "notionUsername": "username2",
+      "slackIcon": "icon2"
+    },
+    {
+      "notionUsername": "username3",
+      "slackIcon": "icon3"
+    }
+  ]
+}
