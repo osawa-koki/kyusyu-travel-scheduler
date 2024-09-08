@@ -1,4 +1,5 @@
-export default function schedule2Text(schedule) {
+export default function schedule2Text({ schedule }) {
+  const emoji = schedule.icon.emoji
   const startDatetime = new Date(schedule.properties["日付"].date.start)
   const endDatetime = new Date(schedule.properties["日付"].date.end)
   const startYmd = `${startDatetime.getFullYear()}-${(startDatetime.getMonth() + 1).toString().padStart(2, "0")}-${startDatetime.getDate().toString().padStart(2, "0")}`
@@ -21,7 +22,7 @@ export default function schedule2Text(schedule) {
 
   const header = `📅 ${start} - ${end}`
   let body = ''
-  body += `\t\t├ ${title}`
+  body += `\t\t├ ${emoji} ${title}`
   body += '\n'
   body += `\t\t└ ${place}`
   return `${header}\n${body}`
