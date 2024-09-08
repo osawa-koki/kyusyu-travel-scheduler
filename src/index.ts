@@ -57,13 +57,11 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
     "Notion-Version": "2022-06-28"
   }
 
-  const options = {
+  const response = UrlFetchApp.fetch(notionApiEndpoint, {
     "method": "post",
     "headers": headers,
     "muteHttpExceptions": true
-  }
-
-  const response = UrlFetchApp.fetch(notionApiEndpoint, options)
+  })
 
   const statusCode = response.getResponseCode()
   if (statusCode !== 200) {
@@ -104,7 +102,7 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
 
   const messageHeader = `🎈🎈🎈 Kyusyu-Travel 🎈🎈🎈`
   const messageBody = slicedSchedules.map((schedule) => {
-    return schedule2Text({ schedule, notionSecret, notionUsernameSlackIconMapper })
+    return schedule2Text({ schedule, notionSecret, now, notionUsernameSlackIconMapper })
   }).join("\n")
   const messageFooter = `===== ===== ===== ===== =====`
 

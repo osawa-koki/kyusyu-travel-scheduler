@@ -1,6 +1,6 @@
 import notionBlock2Markdown from "./notionBlock2Markdown"
 
-export default function schedule2Text({ schedule, notionSecret, notionUsernameSlackIconMapper }) {
+export default function schedule2Text({ schedule, notionSecret, notionUsernameSlackIconMapper, now }) {
   const emoji = schedule.icon.emoji
   const notionUrl = schedule.url
 
@@ -35,11 +35,29 @@ export default function schedule2Text({ schedule, notionSecret, notionUsernameSl
     .sort()
   const asineesText = asignees.length > 0 ? asigneeIcons.join(' ') : '<担当者未設定>'
 
+  const diff = startDatetime.getTime() - now.getTime()
+  const diffHourFromNow = diff / 1000 / 60 / 60
+  const approaching = (() => {
+    if (diff < 10 * 60 * 1000) {
+      return '🔥🔥🔥'
+    } else if (diff < 60 * 60 * 1000) {
+      return '🔥🔥'
+    } else if (diff < 3 * 60 * 60 * 1000) {
+      return '🔥'
+    } else {
+      return null
+    }
+  })()
+
   const content = notionBlock2Markdown({ notionSecret, blockId: schedule.id })
   const contentText = content.split('\n').map((line) => line.trim() === '' ? null : `\t\t\t\t├ ${line}`).filter((l) => l !== null).join('\n')
 
   const header = `📅 ${start} - ${end} | ${diffHourText}h`
   let body = ''
+  if (approaching != null) {
+    body += `\t\t${approaching} Start in ${diffHourFromNow.toFixed(1)}h`
+    body += '\n'
+  }
   body += `\t\t├ ${emoji} ${title}`
   body += '\n'
   body += `\t\t├ ${asineesText}`
