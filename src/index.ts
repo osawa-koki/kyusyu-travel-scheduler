@@ -90,7 +90,11 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
     return startDatetimeA.getTime() - startDatetimeB.getTime()
   })
 
-  const slicedSchedules = sortedSchedules.slice(0, 5)
+  const commands = body.event.text.split(' ')
+  const givenNumber = commands.length >= 2 ? parseInt(commands[1]) : NaN
+  const slicingCount = isNaN(givenNumber) ? 5 : givenNumber === 0 ? sortedSchedules.length : givenNumber
+
+  const slicedSchedules = sortedSchedules.slice(0, slicingCount)
 
   slicedSchedules.forEach((schedule) => {
     Logger.log(JSON.stringify(schedule, null, 2))
