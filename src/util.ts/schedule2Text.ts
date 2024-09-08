@@ -24,6 +24,7 @@ export default function schedule2Text({ schedule, notionUsernameSlackIconMapper 
   const asigneeIcons = asignees.map(
     (asignee) =>
       `:${notionUsernameSlackIconMapper.find((mapper) => mapper.notionUsername === asignee)?.slackIcon ?? 'question'}:`)
+    .sort()
   const asineesText = asignees.length > 0 ? asigneeIcons.join(' ') : '<担当者未設定>'
 
   const header = `📅 ${start} - ${end}`
