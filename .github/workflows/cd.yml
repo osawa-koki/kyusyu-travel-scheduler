@@ -1,0 +1,35 @@
+name: cd
+
+on:
+  workflow_dispatch:
+  push:
+    tags: [ v-* ]
+
+env:
+  node-version: 22.x
+
+jobs:
+  cd:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.node-version }}
+      - name: Cache node_modules
+        id: node_modules_cache_id
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules/
+          key: node-modules-${{ env.node-version }}-${{ hashFiles('./**/yarn.lock') }}
+      - name: Install Dependencies
+        if: steps.node_modules_cache_id.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile --non-interactive --production=true
+      - name: Create clasprc.json
+        run: echo $'${{ secrets.CLASP_RC_JSON }}' > ~/.clasprc.json
+      - name: Build
+        run: yarn build
+      - name: Deploy
+        run: yarn push
