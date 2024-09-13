@@ -46,21 +46,21 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
   }
 
 
-  const notionSecret = properties.getProperty("NOTION_SECRET")!
-  const notionDatabaseId = properties.getProperty("NOTION_DATABASE_ID")!
+  const notionSecret = properties.getProperty('NOTION_SECRET')!
+  const notionDatabaseId = properties.getProperty('NOTION_DATABASE_ID')!
 
   const notionApiEndpoint = `https://api.notion.com/v1/databases/${notionDatabaseId}/query`
 
   const headers = {
-    "Authorization": `Bearer ${notionSecret}`,
-    "Content-Type": "application/json",
-    "Notion-Version": "2022-06-28"
+    'Authorization': `Bearer ${notionSecret}`,
+    'Content-Type': 'application/json',
+    'Notion-Version': '2022-06-28'
   }
 
   const response = UrlFetchApp.fetch(notionApiEndpoint, {
-    "method": "post",
-    "headers": headers,
-    "muteHttpExceptions": true
+    'method': 'post',
+    'headers': headers,
+    'muteHttpExceptions': true
   })
 
   const statusCode = response.getResponseCode()
@@ -78,13 +78,13 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
 
   const existingSchedules = results.filter((record) => {
     const properties = record.properties
-    const startDatetime = new Date(properties["日付"].date.start)
+    const startDatetime = new Date(properties['日付'].date.start)
     return startDatetime > datetimeThreshold
   })
 
   const sortedSchedules = existingSchedules.sort((a, b) => {
-    const startDatetimeA = new Date(a.properties["日付"].date.start)
-    const startDatetimeB = new Date(b.properties["日付"].date.start)
+    const startDatetimeA = new Date(a.properties['日付'].date.start)
+    const startDatetimeB = new Date(b.properties['日付'].date.start)
     return startDatetimeA.getTime() - startDatetimeB.getTime()
   })
 
@@ -98,22 +98,22 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
     Logger.log(JSON.stringify(schedule, null, 2))
   })
 
-  const { notionUsernameSlackIconMapper } = JSON.parse(properties.getProperty("NOTION_USERNAME_SLACK_ICON_MAPPER")!)
+  const { notionUsernameSlackIconMapper } = JSON.parse(properties.getProperty('NOTION_USERNAME_SLACK_ICON_MAPPER')!)
 
   const messageHeader = `🎈🎈🎈 Kyusyu-Travel 🎈🎈🎈`
   const messageBody = slicedSchedules.map((schedule) => {
     return schedule2Text({ schedule, notionSecret, now, notionUsernameSlackIconMapper })
-  }).join("\n")
+  }).join('\n')
   const messageFooter = `===== ===== ===== ===== =====`
 
-  const message = [messageHeader, '', messageBody, '', messageFooter].join("\n")
+  const message = [messageHeader, '', messageBody, '', messageFooter].join('\n')
 
   Logger.log(message)
 
-  const slackIncomingWebhookUrl = properties.getProperty("SLACK_INCOMING_WEBHOOK_URL")!
+  const slackIncomingWebhookUrl = properties.getProperty('SLACK_INCOMING_WEBHOOK_URL')!
 
   let canSend = true
-  const lastSlackSentAt = properties.getProperty("LAST_SLACK_SENT_AT")
+  const lastSlackSentAt = properties.getProperty('LAST_SLACK_SENT_AT')
   if (lastSlackSentAt != null) {
     const lastSentAt = new Date(lastSlackSentAt)
     const diff = now.getTime() - lastSentAt.getTime()
@@ -125,7 +125,7 @@ function main(_e: GoogleAppsScript.Events.DoPost & Istest) {
   if (isProd && canSend) {
     const response = sendSlackMessage(slackIncomingWebhookUrl, message)
     Logger.log(response.getContentText())
-    properties.setProperty("LAST_SLACK_SENT_AT", now.toISOString())
+    properties.setProperty('LAST_SLACK_SENT_AT', now.toISOString())
   }
 
   return out.setContent(JSON.stringify({ isProd, properties }))

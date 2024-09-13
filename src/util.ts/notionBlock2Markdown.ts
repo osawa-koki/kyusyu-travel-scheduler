@@ -1,11 +1,11 @@
 export default function notionBlock2Markdown({ notionSecret, blockId }) {
   const response = UrlFetchApp.fetch(`https://api.notion.com/v1/blocks/${blockId}/children`, {
-    "headers": {
-      "Authorization": `Bearer ${notionSecret}`,
-      "Content-Type": "application/json",
-      "Notion-Version": "2022-06-28"
+    'headers': {
+      'Authorization': `Bearer ${notionSecret}`,
+      'Content-Type': 'application/json',
+      'Notion-Version': '2022-06-28'
     },
-    "muteHttpExceptions": true
+    'muteHttpExceptions': true
   })
   const blocks = JSON.parse(response.getContentText()).results
   let numberedListItemCounter = 0
